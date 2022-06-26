@@ -11,6 +11,7 @@ export const Reservations = () => {
   const context = useWeb3React<Provider>();
   const { library, active } = context;
   const [signer, setSigner] = useState<Signer>();
+  const [signerAddr, setSignerAddr] = useState<string | null>(null);
   const [properties, setProperties] = useState<Property[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([])
   const [airBlockContractAddr, setAirBlockContractAddr] = useState<string>(
@@ -27,25 +28,39 @@ export const Reservations = () => {
       return;
     }
 
-    setSigner(library.getSigner());
+    const signer = library.getSigner();
+    setSigner(signer);
+    signer.getAddress().then(setSignerAddr);
   }, [library]);
 
   useEffect(() => {
     if (!signer) return;
 
-    airBlockContract.connect(signer).getBookingsForTenant().then(setBookings);
-    airBlockContract.connect(signer).getAllProperties().then(setProperties);
+    const connectedContract = airBlockContract.connect(signer);
 
-    airBlockContract.connect(signer).on('NewProperty', async (propertyId) => {
-      airBlockContract.connect(signer).getAllProperties().then(setProperties);
+    connectedContract.getBookingsForTenant().then(setBookings);
+    connectedContract.getAllProperties().then(setProperties);
+
+    connectedContract.on('NewProperty', async () => {
+      connectedContract.getAllProperties().then(setProperties);
     });
-  }, [airBlockContract, signer]);
+
+    connectedContract.on('ConfirmBooking', async () => {
+      connectedContract.getBookingsForTenant().then(setBookings);
+    });
+
+    connectedContract.on('CancelBooking', async () => {
+      connectedContract.getBookingsForTenant().then(setBookings);
+    });
+  }, [airBlockContract, signer, signerAddr]);
 
   const handleModifyBooking = (booking: Booking): Promise<any> => {
     return Promise.resolve();
   }
 
   const handleCancelBooking = (booking: Booking): Promise<any> => {
+    if(!signer || !airBlockContract) return Promise.reject();
+    
     return Promise.resolve();
   } 
 
@@ -56,18 +71,11 @@ export const Reservations = () => {
     const property = properties[booking.propertyId.toNumber()];
     const totalDayStays = booking.checkOutDay.sub(booking.checkInDay).toNumber();
 
-    console.log('property ', property);
-    console.log('booking ', booking, booking.checkOutDay, booking.checkInDate);
-    console.log('totalDayStays ', totalDayStays);
-
     if(property.currency === 'ETH') {
       value = Number(ethers.utils.formatEther(property.price)) * totalDayStays;
     }else {
       value = property.price *  totalDayStays;
     }
-
-    console.log('ethers ', Number(ethers.utils.formatEther(property.price)));
-    console.log('value ', value);
 
     return airBlockContract.connect(signer)
       .confirmBooking(booking.bookingId, {

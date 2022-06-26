@@ -25,7 +25,7 @@ contract AirBlock {
     uint256 totalPrice;
     bool isConfirmed;
     bool isDeleted;
-    address user;
+    address renter;
   }
 
   mapping(uint256 => Property) public properties;
@@ -130,7 +130,8 @@ contract AirBlock {
       checkOutDate,
       checkInDay,
       checkOutDay,
-      totalPrice
+      totalPrice,
+      msg.sender
     );
   }
 
@@ -139,7 +140,8 @@ contract AirBlock {
     Property memory currentProperty = properties[deletedBooking.propertyId];
     
     require(deletedBooking.isConfirmed == false, 'booking has already been confirmed. Delete is not possible');
-    
+    require(deletedBooking.renter == msg.sender, 'not the person who originally made the booking');
+
     for (uint256 i = deletedBooking.checkInDay; i < deletedBooking.checkOutDay; i++) {
       currentProperty.isBooked[i] = false;
     }
@@ -162,6 +164,7 @@ contract AirBlock {
 
     require(currentProperty.isActive == true, 'property with this ID is not active');
     require(newBooking.isDeleted == false, 'booking with this ID is already deleted');
+    require(newBooking.renter == msg.sender, 'not the person who originally made the booking');
 
     for (uint256 i = newCheckInDay; i < newCheckOutDay; i++) {
       if (currentProperty.isBooked[i] == true) {
@@ -191,6 +194,7 @@ contract AirBlock {
     Property memory currentProperty = properties[currentBooking.propertyId];
     require(currentBooking.isDeleted == false, 'booking with this ID is already deleted');
     require(currentProperty.isActive == true, 'property with this ID is not active');
+    require(currentBooking.renter == msg.sender, 'not the person who originally made the booking');
 
     uint256 totalPrice = currentProperty.price * (currentBooking.checkOutDay - currentBooking.checkInDay);
 
@@ -207,7 +211,7 @@ contract AirBlock {
     Booking[] memory bookingsForTenant = new Booking[](bookingId);
 
     for (uint256 i = 0; i < bookingId; i++) {
-      if (bookings[i].user == msg.sender) {
+      if (bookings[i].renter == msg.sender) {
         bookingsForTenant[i] = bookings[i];
       }
     }
@@ -231,7 +235,8 @@ contract AirBlock {
     string memory checkOutDate,
     uint256 checkInDay,
     uint256 checkOutDay,
-    uint256 totalPrice
+    uint256 totalPrice,
+    address renter
   ) internal {
     bookings[bookingId] = Booking(
       bookingId,
@@ -243,7 +248,7 @@ contract AirBlock {
       totalPrice,
       false,
       false,
-      msg.sender
+      renter
     );
 
     Property storage property = properties[_propertyId];

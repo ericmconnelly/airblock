@@ -52,59 +52,10 @@ export const ListingModal = ({
     setSigner(library.getSigner());
   }, [library]);
 
-  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setName(event.target.value);
-  };
-
-  const handleDescriptionChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setDescription(event.target.value);
-  };
-
-  const handlePriceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPrice(event.target.value.replace(/[^0-9\.]/g, ''));
-  };
-
-  const handleLocationChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setLocation(event.target.value);
-  };
-
-  const handleImageChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    k: string
-  ) => {
-    setImages((oldImages) => ({
-      ...oldImages,
-      [k]: event.target.value
-    }));
-  };
-
   const handleCreateListing = async (
     event: React.MouseEvent<HTMLButtonElement>
   ) => {
     if (!signer || !airBlockContract) return;
-
-    setCreating(true);
-
-    let listingPrice: BigNumber | string = price;
-    
-    if(currency === 'ETH'){
-      listingPrice = ethers.utils.parseUnits(price, 'ether')
-    }
-
-    const txn = await airBlockContract
-      .connect(signer)
-      .listProperty(
-        name,
-        description,
-        location,
-        Object.values(images),
-        listingPrice,
-        currency
-      );
-    await txn.wait();
-    setCreating(false);
 
     onClose();
   };
@@ -112,10 +63,6 @@ export const ListingModal = ({
   useEffect(() => {
     if (!signer || !airBlockContract) return;
 
-    airBlockContract
-      .connect(signer)
-      .getPropertiesForOwner()
-      .then(setListedProperties);
   }, [airBlockContract, signer]);
 
   return (
@@ -149,61 +96,12 @@ export const ListingModal = ({
                   as="h3"
                   className="text-lg font-medium leading-6 text-gray-900"
                 >
-                  New listing
+                  Confirm
                 </Dialog.Title>
                 <div className="mt-2">
-                  <Input
-                    value={name}
-                    labelText="Name"
-                    labelFor="name"
-                    placeholder="Name"
-                    id="name"
-                    handleChange={handleNameChange}
-                    isRequired
-                  />
-                  <Input
-                    value={description}
-                    labelText="Description"
-                    labelFor="description"
-                    placeholder="Description"
-                    id="description"
-                    handleChange={handleDescriptionChange}
-                    isRequired
-                  />
-                  <Input
-                    value={location}
-                    labelText="Location"
-                    labelFor="location"
-                    placeholder="Location"
-                    id="location"
-                    handleChange={handleLocationChange}
-                    isRequired
-                  />
-                  {Object.keys(images_hash).map((k: string) => (
-                    <Input
-                      key={k}
-                      value={images[k]}
-                      labelText="Image"
-                      labelFor="image"
-                      placeholder={`Image ${Number(k) + 1}`}
-                      id="image"
-                      handleChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        handleImageChange(e, k)
-                      }
-                      isRequired
-                    />
-                  ))}
-                  <CurrencyInput
-                    value={price}
-                    currency={currency}
-                    onPriceChange={handlePriceChange}
-                    onCurrencyChange={setCurrency}
-                    labelText="Price"
-                    labelFor="price"
-                    placeholder="Property price per day"
-                    id="price"
-                  />
+                    Content
                 </div>
+                  
 
                 <div className="mt-4 flex gap-4">
                   <button
