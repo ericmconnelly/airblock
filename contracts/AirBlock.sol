@@ -46,6 +46,9 @@ contract AirBlock {
 
   // emitted when a booking is cancelled
   event CancelBooking(uint256 indexed bookingId);
+
+  // emitted when a booking is modified
+  event ModifyBooking(uint256 indexed bookingId);
   
   function listProperty(
     string memory name,
@@ -187,6 +190,8 @@ contract AirBlock {
     newBooking.checkOutDate = newCheckOutDate;
     
     bookings[_bookingId] = newBooking;
+
+    emit ModifyBooking(newBooking.bookingId);
   }
 
   function confirmBooking(uint256 _bookingId) public payable {

@@ -33,10 +33,14 @@ export const Listings = () => {
   useEffect(() => {
     if (!signer) return;
 
-    airBlockContract
+    try {
+      airBlockContract
       .connect(signer)
       .getPropertiesForOwner()
       .then(setListedProperties);
+    } catch (err) {
+      // console.log(err);
+    }
 
     airBlockContract.connect(signer).on('NewProperty', async (propertyId) => {
       airBlockContract

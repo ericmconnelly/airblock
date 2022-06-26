@@ -57,18 +57,16 @@ export const BookingsList = ({
   ) => {
     setConfirmings((oldConfirmings) => ({
       ...oldConfirmings,
-      [booking.bookingId]: true
+      [booking.bookingId.toNumber()]: true
     }));
 
     const tx = await onClickConfirm(booking);
 
     await tx.wait();
 
-    console.log('confirm booking success', tx.address, booking.bookingId);
-
     setConfirmings((oldConfirmings) => ({
       ...oldConfirmings,
-      [booking.bookingId]: false
+      [booking.bookingId.toNumber()]: false
     }));
   };
 
@@ -78,14 +76,14 @@ export const BookingsList = ({
   ) => {
     setModifyings((oldModifyings) => ({
       ...oldModifyings,
-      [booking.bookingId]: true
+      [booking.bookingId.toNumber()]: true
     }));
 
     await onClickModify(booking);
 
     setModifyings((oldModifyings) => ({
       ...oldModifyings,
-      [booking.bookingId]: false
+      [booking.bookingId.toNumber()]: false
     }));
   };
 
@@ -95,14 +93,14 @@ export const BookingsList = ({
   ) => {
     setCancelings((oldCancelings) => ({
       ...oldCancelings,
-      [booking.bookingId]: true
+      [booking.bookingId.toNumber()]: true
     }));
 
-    onClickCancel(booking);
+    await onClickCancel(booking);
 
     setCancelings((oldCancelings) => ({
       ...oldCancelings,
-      [booking.bookingId]: false
+      [booking.bookingId.toNumber()]: false
     }));
   };
 
@@ -112,7 +110,7 @@ export const BookingsList = ({
     <div className="mt-4">
       <ul className="flex flex-col gap-4 max-w-screen-xl object-contain">
         {bookings.map((booking) => (
-          <li className="mb-16" key={booking.propertyId.toNumber()}>
+          <li className="mb-16" key={booking.bookingId.toNumber()}>
             <h5 className="font-medium leading-tight text-xl mt-2 mb-1">
               {properties[booking.propertyId.toNumber()].name}
             </h5>
@@ -186,7 +184,7 @@ export const BookingsList = ({
                     handleConfirmBooking(e, booking)
                   }
                 >
-                  {confirmings[booking.bookingId] ? (
+                  {confirmings[booking.bookingId.toNumber()] ? (
                     <svg
                       className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
                       xmlns="http://www.w3.org/2000/svg"
@@ -219,7 +217,7 @@ export const BookingsList = ({
                     handleModifyBooking(e, booking)
                   }
                 >
-                  {modifyings[booking.bookingId] ? (
+                  {modifyings[booking.bookingId.toNumber()] ? (
                     <svg
                       className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
                       xmlns="http://www.w3.org/2000/svg"
@@ -252,7 +250,7 @@ export const BookingsList = ({
                     handleCancelBooking(e, booking)
                   }
                 >
-                  {cancelings[booking.bookingId] ? (
+                  {cancelings[booking.bookingId.toNumber()] ? (
                     <svg
                       className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
                       xmlns="http://www.w3.org/2000/svg"
@@ -298,14 +296,16 @@ export const BookingsList = ({
                 <div className="inline-flex mt-2 justify-center rounded-md border border-transparent bg-red-100 px-3 py-2 text-sm font-medium text-red-900 hover:bg-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 mr-2"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
+                    className="h-6 w-6 mr-2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth="2"
                   >
                     <path
-                      fillRule="evenodd"
-                      d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                      clipRule="evenodd"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
                   Cancelled booking

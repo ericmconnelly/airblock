@@ -5,43 +5,46 @@ import { CurrencyInput } from './CurrencyInput';
 import { Dialog, Transition } from '@headlessui/react';
 import { Provider } from '../utils/provider';
 import { Input } from './Input';
+import { DatePicker } from './DatePicker';
 import AirBlockArtifact from '../artifacts/contracts/AirBlock.sol/AirBlock.json';
+import { Booking, Property } from '../types';
+import { contractAddress } from './address';
 
-type ListingModalProps = {
+type ConfirmModifyBookingModalProps = {
   onOpen: () => void;
   onClose: () => void;
   isOpen: boolean;
-  airBlockContractAddr: string;
+  booking: Booking | null;
+  property: Property | null;
 };
 
-const MAX_IMAGES = 5;
+const dayOfYear = (date: Date | null) => {
+  if (!date) return 0;
+  return Math.floor(
+    (date.getTime() - new Date(date.getFullYear(), 0, 0).getTime()) /
+      1000 /
+      60 /
+      60 /
+      24
+  );
+};
 
-const images_hash: { [key: string]: string } = {};
-
-for (let i = 0; i < MAX_IMAGES; i++) {
-  images_hash[i] = '';
-}
-
-export const ListingModal = ({
+export const ConfirmModifyBookingModal = ({
   onOpen,
   onClose,
   isOpen,
-  airBlockContractAddr
-}: ListingModalProps) => {
+  booking,
+  property
+}: ConfirmModifyBookingModalProps) => {
   const context = useWeb3React<Provider>();
   const { library, active } = context;
   const [signer, setSigner] = useState<Signer>();
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [price, setPrice] = useState('');
-  const [currency, setCurrency] = useState('ETH');
-  const [location, setLocation] = useState('');
   const [airBlockContract, setAirBlockContract] = useState<Contract>(
-    new ethers.Contract(airBlockContractAddr, AirBlockArtifact.abi, signer)
+    new ethers.Contract(contractAddress, AirBlockArtifact.abi, signer)
   );
-  const [listedProperties, setListedProperties] = useState([]);
-  const [creating, setCreating] = useState(false);
-  const [images, setImages] = useState(images_hash);
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [modifying, setModifying] = useState(false);
 
   useEffect((): void => {
     if (!library) {
@@ -52,18 +55,36 @@ export const ListingModal = ({
     setSigner(library.getSigner());
   }, [library]);
 
-  const handleCreateListing = async (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    if (!signer || !airBlockContract) return;
-
-    onClose();
+  const handleSelectStart = (date: Date) => {
+    setStartDate(date);
   };
 
-  useEffect(() => {
-    if (!signer || !airBlockContract) return;
+  const handleSelectEnd = (date: Date) => {
+    setEndDate(date);
+  };
 
-  }, [airBlockContract, signer]);
+  const handleModifyListing = async (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    if (!signer || !airBlockContract || !booking) return;
+
+    setModifying(true);
+
+    const tx = await airBlockContract
+      .connect(signer)
+      .modifyBooking(
+        booking.bookingId,
+        (startDate && startDate.toISOString()) || '',
+        (endDate && endDate.toISOString()) || '',
+        dayOfYear(startDate),
+        dayOfYear(endDate)
+      );
+
+    await tx.wait();
+
+    setModifying(false);
+    onClose();
+  };
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
@@ -91,26 +112,34 @@ export const ListingModal = ({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+              <Dialog.Panel className="max-w-l transform rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                 <Dialog.Title
                   as="h3"
                   className="text-lg font-medium leading-6 text-gray-900"
                 >
-                  Confirm
+                  Modify listing
                 </Dialog.Title>
                 <div className="mt-2">
-                    Content
+                  <div className="flex flex-row mb-8">
+                    <DatePicker
+                      labelText="Check in"
+                      onSelect={handleSelectStart}
+                    />
+                    <DatePicker
+                      labelText="Check out"
+                      onSelect={handleSelectEnd}
+                    />
+                  </div>
                 </div>
-                  
 
                 <div className="mt-4 flex gap-4">
                   <button
-                    disabled={creating}
+                    disabled={modifying}
                     type="button"
                     className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                    onClick={handleCreateListing}
+                    onClick={handleModifyListing}
                   >
-                    {creating ? (
+                    {modifying ? (
                       <svg
                         className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
                         xmlns="http://www.w3.org/2000/svg"
@@ -132,9 +161,10 @@ export const ListingModal = ({
                         ></path>
                       </svg>
                     ) : null}
-                    Create
+                    Modify
                   </button>
                   <button
+                    disabled={modifying}
                     type="button"
                     className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                     onClick={onClose}

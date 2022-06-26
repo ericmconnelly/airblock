@@ -75,7 +75,7 @@ export const PropertyListReserve = ({ properties }: PropertyListProps) => {
 
     setReservings((oldReservings) => ({
       ...oldReservings,
-      [property.id]: true
+      [property.id.toNumber()]: true
     }));
 
     const txn = await airBlockContract
@@ -91,12 +91,12 @@ export const PropertyListReserve = ({ properties }: PropertyListProps) => {
     await txn.wait();
     setReservings((oldReservings) => ({
       ...oldReservings,
-      [property.id]: false
+      [property.id.toNumber()]: false
     }));
 
     setReserveSuccess((oldReserveSuccess) => ({
       ...oldReserveSuccess,
-      [property.id]: {
+      [property.id.toNumber()]: {
         startDate: (startDate && startDate.toISOString()) || '',
         endDate: (endDate && endDate.toISOString()) || ''
       }
@@ -164,7 +164,7 @@ export const PropertyListReserve = ({ properties }: PropertyListProps) => {
               <DatePicker labelText="Check in" onSelect={handleSelectStart} />
               <DatePicker labelText="Check out" onSelect={handleSelectEnd} />
             </div>
-            {!reserveSuccess[property.id] ? (
+            {!reserveSuccess[property.id.toNumber()] ? (
               <button
                 type="button"
                 className="inline-flex mt-2 justify-center rounded-md border border-transparent bg-blue-100 px-3 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
@@ -172,7 +172,7 @@ export const PropertyListReserve = ({ properties }: PropertyListProps) => {
                   handleReserveProperty(e, property)
                 }
               >
-                {reservings[property.id] ? (
+                {reservings[property.id.toNumber()] ? (
                   <svg
                     className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
                     xmlns="http://www.w3.org/2000/svg"
@@ -197,7 +197,7 @@ export const PropertyListReserve = ({ properties }: PropertyListProps) => {
                 Reserve
               </button>
             ) : null}
-            {reserveSuccess[property.id] ? (
+            {reserveSuccess[property.id.toNumber()] ? (
               <div className="inline-flex mt-2 justify-center rounded-md border border-transparent bg-green-100 px-3 py-2 text-sm font-medium text-green-900 hover:bg-green-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -211,8 +211,8 @@ export const PropertyListReserve = ({ properties }: PropertyListProps) => {
                     clipRule="evenodd"
                   />
                 </svg>
-                Reserved from {new Date(reserveSuccess[property.id].startDate).toDateString()} to{' '}
-                {new Date(reserveSuccess[property.id].endDate).toDateString()}
+                Reserved from {new Date(reserveSuccess[property.id.toNumber()].startDate).toDateString()} to{' '}
+                {new Date(reserveSuccess[property.id.toNumber()].endDate).toDateString()}
               </div>
             ) : null}
           </li>

@@ -1,10 +1,12 @@
+import { BigNumber } from 'ethers';
+
 export type Property = {
-  id: any;
+  id: BigNumber;
   name: string;
   description: string;
   location: string;
   images: string[];
-  price: any;
+  price: BigNumber;
   currency: string;
   isActive: boolean;
   owner: string;
@@ -12,13 +14,13 @@ export type Property = {
 };
 
 export type Booking = {
-  bookingId: any;
-  propertyId: any;
-  checkInDay: any;
-  checkOutDay: any;
-  checkInDate: any;
-  checkOutDate: any;
-  totalPrice: any;
+  bookingId: BigNumber;
+  propertyId: BigNumber;
+  checkInDay: BigNumber;
+  checkOutDay: BigNumber;
+  checkInDate: string;
+  checkOutDate: string;
+  totalPrice: BigNumber;
   isConfirmed: boolean;
   isDeleted: boolean;
   user: string;

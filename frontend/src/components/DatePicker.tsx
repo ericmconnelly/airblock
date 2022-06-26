@@ -24,13 +24,13 @@ export const DatePicker = ({ labelText, onSelect }: any) => {
   const decrement = () => {
     switch (type) {
       case 'date':
-        setDatepickerHeaderDate((prev) => subMonths(prev, 1));
+        setDatepickerHeaderDate((prev: any) => subMonths(prev, 1));
         break;
       case 'month':
-        setDatepickerHeaderDate((prev) => subYears(prev, 1));
+        setDatepickerHeaderDate((prev: any) => subYears(prev, 1));
         break;
       case 'year':
-        setDatepickerHeaderDate((prev) => subMonths(prev, 1));
+        setDatepickerHeaderDate((prev: any) => subMonths(prev, 1));
         break;
     }
   };
@@ -38,13 +38,13 @@ export const DatePicker = ({ labelText, onSelect }: any) => {
   const increment = () => {
     switch (type) {
       case 'date':
-        setDatepickerHeaderDate((prev) => addMonths(prev, 1));
+        setDatepickerHeaderDate((prev: any) => addMonths(prev, 1));
         break;
       case 'month':
-        setDatepickerHeaderDate((prev) => addYears(prev, 1));
+        setDatepickerHeaderDate((prev: any) => addYears(prev, 1));
         break;
       case 'year':
-        setDatepickerHeaderDate((prev) => subMonths(prev, 1));
+        setDatepickerHeaderDate((prev: any) => subMonths(prev, 1));
         break;
     }
   };
@@ -109,15 +109,28 @@ export const DatePicker = ({ labelText, onSelect }: any) => {
     setType('date');
   };
 
+  const setYearValue = (year: number) => () => {
+    setDatepickerHeaderDate(
+      new Date(
+        year,
+        datepickerHeaderDate.getMonth(),
+        datepickerHeaderDate.getDate()
+      )
+    );
+    setType('date');
+  };
+
   const toggleDatepicker = () => setShowDatepicker((prev) => !prev);
 
   const showMonthPicker = () => setType('month');
 
-  const showYearPicker = () => setType('date');
+  const showYearPicker = () => setType('year');
 
   useEffect(() => {
     getDayCount(datepickerHeaderDate);
   }, [datepickerHeaderDate]);
+
+  console.log('type ', type);
 
   return (
     <div className="mt-4">
@@ -300,14 +313,36 @@ export const DatePicker = ({ labelText, onSelect }: any) => {
                           ))}
                       </div>
                     )}{' '}
-                    {/* {type === 'year' && (
-                      <Datepicker
-                        datepickerHeaderDate={datepickerHeaderDate}
-                        selectedDate={selectedDate}
-                        setSelectedDate={setSelectedDate}
-                        closeDatepicker={() => setShowDatepicker(false)}
-                      />
-                    )} */}
+                    {type === 'year' && (
+                      <div className="flex flex-wrap -mx-1">
+                        {Array(12)
+                          .fill(null)
+                          .map((_, i) => (
+                            <div
+                              key={datepickerHeaderDate.getFullYear() + i}
+                              onClick={setYearValue(datepickerHeaderDate.getFullYear() + i)}
+                              style={{ width: '25%' }}
+                            >
+                              <div
+                                className={`cursor-pointer p-5 font-semibold text-center text-sm rounded-lg hover:bg-gray-200 ${
+                                  isSelectedMonth(i)
+                                    ? 'bg-blue-500 text-white'
+                                    : 'text-gray-700 hover:bg-blue-200'
+                                }`}
+                              >
+                                {format(
+                                  new Date(
+                                    datepickerHeaderDate.getFullYear() + i,
+                                    datepickerHeaderDate.getMonth(),
+                                    datepickerHeaderDate.getDate()
+                                  ),
+                                  'yyyy'
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

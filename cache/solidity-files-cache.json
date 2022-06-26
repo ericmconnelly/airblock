@@ -74,8 +74,8 @@
       ]
     },
     "/Users/ericle/Projects/ChainShot/chainshot-final-project/contracts/AirBlock.sol": {
-      "lastModificationDate": 1656211435207,
-      "contentHash": "e7b79eb939ec0f4e545edd9f2b106dd6",
+      "lastModificationDate": 1656254889532,
+      "contentHash": "983b0aefc43b04a409516e6dd4e9192b",
       "sourceName": "contracts/AirBlock.sol",
       "solcConfig": {
         "version": "0.8.4",

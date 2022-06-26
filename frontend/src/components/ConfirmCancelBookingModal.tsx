@@ -1,48 +1,34 @@
-import React, { Fragment, useState, useEffect, useMemo } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import { useWeb3React } from '@web3-react/core';
-import { BigNumber, Contract, ethers, Signer } from 'ethers';
-import { CurrencyInput } from './CurrencyInput';
+import { Contract, ethers, Signer } from 'ethers';
 import { Dialog, Transition } from '@headlessui/react';
 import { Provider } from '../utils/provider';
-import { Input } from './Input';
-import { DatePicker } from './DatePicker';
 import AirBlockArtifact from '../artifacts/contracts/AirBlock.sol/AirBlock.json';
-import { Booking, Property } from '../types';
 import { contractAddress } from './address';
+import { Booking, Property } from "../types";
 
-type ModifyBookingModalProps = {
+type ConfirmCancelBookingModalProps = {
   onOpen: () => void;
   onClose: () => void;
   isOpen: boolean;
-  existingBooking: Booking;
-  existingProperty: Property;
+  booking: Booking | null;
+  property: Property | null;
 };
 
-const MAX_IMAGES = 5;
-
-const images_hash: { [key: string]: string } = {};
-
-for (let i = 0; i < MAX_IMAGES; i++) {
-  images_hash[i] = '';
-}
-
-export const ModifyBookingModal = ({
+export const ConfirmCancelBookingModal = ({
   onOpen,
   onClose,
   isOpen,
-  existingBooking,
-  existingProperty,
-}: ModifyBookingModalProps) => {
+  booking,
+  property,
+}: ConfirmCancelBookingModalProps) => {
   const context = useWeb3React<Provider>();
   const { library, active } = context;
   const [signer, setSigner] = useState<Signer>();
-  const [price, setPrice] = useState(existingBooking.totalPrice);
   const [airBlockContract, setAirBlockContract] = useState<Contract>(
     new ethers.Contract(contractAddress, AirBlockArtifact.abi, signer)
   );
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [endDate, setEndDate] = useState<Date | null>(null);
-  const [modifying, setModifying] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
 
   useEffect((): void => {
     if (!library) {
@@ -53,55 +39,25 @@ export const ModifyBookingModal = ({
     setSigner(library.getSigner());
   }, [library]);
 
-  const handlePriceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPrice(event.target.value.replace(/[^0-9\.]/g, ''));
-  };
-
-  const handleSelectStart = (date: Date) => {
-    setStartDate(date);
-  };
-
-  const handleSelectEnd = (date: Date) => {
-    setEndDate(date);
-  };
-
-  const handleModifyListing = async (
-    event: React.MouseEvent<HTMLButtonElement>,
+  const handleCancelBooking = async (
+    event: React.MouseEvent<HTMLButtonElement>
   ) => {
+    if (!signer || !airBlockContract || !booking) return;
+
+    setCancelling(true);
+
+    const tx = await airBlockContract.connect(signer).deleteBooking(booking.bookingId);
+    await tx.wait();
+
+    setCancelling(false);
+    onClose();
+  };
+
+  useEffect(() => {
     if (!signer || !airBlockContract) return;
 
-    setModifying(true);
-  }
+  }, [airBlockContract, signer]);
 
-  // const handleCreateListing = async (
-  //   event: React.MouseEvent<HTMLButtonElement>
-  // ) => {
-  //   if (!signer || !airBlockContract) return;
-
-  //   setCreating(true);
-
-  //   let listingPrice: BigNumber | string = price;
-
-  //   if (currency === 'ETH') {
-  //     listingPrice = ethers.utils.parseUnits(price, 'ether');
-  //   }
-
-  //   const txn = await airBlockContract
-  //     .connect(signer)
-  //     .listProperty(
-  //       name,
-  //       description,
-  //       location,
-  //       Object.values(images),
-  //       listingPrice,
-  //       currency
-  //     );
-  //   await txn.wait();
-  //   setCreating(false);
-
-  //   onClose();
-  // };
-  
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={onClose}>
@@ -133,38 +89,19 @@ export const ModifyBookingModal = ({
                   as="h3"
                   className="text-lg font-medium leading-6 text-gray-900"
                 >
-                  Modify listing
+                  Confirm cancellation
                 </Dialog.Title>
-                <div className="mt-2">
-                  <Input
-                    value={''}
-                    labelText="Location"
-                    labelFor="location"
-                    placeholder="Location"
-                    id="location"
-                    handleChange={() => {}}
-                    isRequired
-                  />
-                  <div className="flex flex-row mb-8">
-                    <DatePicker
-                      labelText="Check in"
-                      onSelect={handleSelectStart}
-                    />
-                    <DatePicker
-                      labelText="Check out"
-                      onSelect={handleSelectEnd}
-                    />
-                  </div>
-                </div>
-
+                <p className="mt-8 mb-8">
+                    Are you sure you want to cancel booking in {property && property.location} from {booking && new Date(booking.checkInDate).toDateString()} to {booking && new Date(booking.checkOutDate).toDateString()}?
+                </p>
                 <div className="mt-4 flex gap-4">
                   <button
-                    disabled={modifying}
+                    disabled={cancelling}
                     type="button"
-                    className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                    onClick={handleModifyListing}
+                    className="inline-flex justify-center rounded-md border border-transparent bg-red-100 px-4 py-2 text-sm font-medium text-red-900 hover:bg-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
+                    onClick={handleCancelBooking}
                   >
-                    {modifying ? (
+                    {cancelling ? (
                       <svg
                         className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
                         xmlns="http://www.w3.org/2000/svg"
@@ -186,12 +123,11 @@ export const ModifyBookingModal = ({
                         ></path>
                       </svg>
                     ) : null}
-                    Modify
+                    Cancel
                   </button>
                   <button
-                    disabled={modifying}
                     type="button"
-                    className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                    className="inline-flex justify-center rounded-md border border-transparent bg-gray-100 px-4 py-2 text-sm font-medium text-grey-900 hover:bg-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-2"
                     onClick={onClose}
                   >
                     Close

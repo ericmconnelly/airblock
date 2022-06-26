@@ -11,7 +11,7 @@ import { ConnectWalletButton } from "./ConnectWalletButton";
 const navigation = [
   { name: 'Home', current: true, to: '/', key: 0 },
   { name: 'Reservations', current: false, to: '/reservations', key: 1 },
-  { name: 'Listings', current: false, to: '/listings', key: 2 },
+  { name: 'Your listings', current: false, to: '/listings', key: 2 },
   { name: 'Wallet', current: false, to: '/wallet', key: 3 }
 ];
 
