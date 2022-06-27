@@ -17,6 +17,9 @@ artifacts
 cache
 gasReporterOutput.json
 
+build
+frontend/build
+
 # VS Code
 vscode-user-settings.json
 vscode-workspace-settings.json
