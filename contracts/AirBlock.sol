@@ -29,7 +29,6 @@ contract AirBlock {
   }
 
   mapping(uint256 => Property) public properties;
-  mapping(address => Property[]) public owners;
   mapping(uint256 => Booking) public bookings;
 
   uint256 public bookingId;
@@ -40,7 +39,7 @@ contract AirBlock {
 
   // emitted when a new booking is made
   event NewBooking(uint256 indexed propertyId, uint256 indexed bookingId);
-  
+
   // emitted when a booking is confirmed
   event ConfirmBooking(uint256 indexed bookingId);
 
@@ -49,7 +48,7 @@ contract AirBlock {
 
   // emitted when a booking is modified
   event ModifyBooking(uint256 indexed bookingId);
-  
+
   function listProperty(
     string memory name,
     string memory description,
@@ -73,7 +72,6 @@ contract AirBlock {
     );
 
     properties[currPropertyId] = newProperty;
-    owners[msg.sender].push(newProperty);
     emit NewProperty(propertyId++);
 
     return currPropertyId;
@@ -90,11 +88,11 @@ contract AirBlock {
   }
 
   function getAllActiveProperties() public view returns (Property[] memory) {
-    Property[] memory allActiveProperties;
+    Property[] memory allActiveProperties = new Property[](propertyId);
     uint256 index = 0;
 
     for (uint256 i = 0; i < propertyId; i++) {
-      if (properties[i].isActive) {
+      if (properties[i].isActive == true) {
         allActiveProperties[index] = properties[i];
         index += 1;
       }
@@ -104,9 +102,17 @@ contract AirBlock {
   }
 
   function getPropertiesForOwner() public view returns (Property[] memory) {
-    require(owners[msg.sender].length > 0, 'not valid property owner');
+    Property[] memory propertiesForOwner = new Property[](propertyId);
+    uint256 index = 0;
 
-    return owners[msg.sender];
+    for (uint256 i = 0; i < propertyId; i++) {
+      if (properties[i].owner == msg.sender) {
+        propertiesForOwner[index] = properties[i];
+        index += 1;
+      }
+    }
+
+    return propertiesForOwner;
   }
 
   function rentProperty(
@@ -141,11 +147,21 @@ contract AirBlock {
   function deleteBooking(uint256 _bookingId) public {
     Booking memory deletedBooking = bookings[_bookingId];
     Property memory currentProperty = properties[deletedBooking.propertyId];
-    
-    require(deletedBooking.isConfirmed == false, 'booking has already been confirmed. Delete is not possible');
-    require(deletedBooking.renter == msg.sender, 'not the person who originally made the booking');
 
-    for (uint256 i = deletedBooking.checkInDay; i < deletedBooking.checkOutDay; i++) {
+    require(
+      deletedBooking.isConfirmed == false,
+      'booking has already been confirmed. Delete is not possible'
+    );
+    require(
+      deletedBooking.renter == msg.sender,
+      'not the person who originally made the booking'
+    );
+
+    for (
+      uint256 i = deletedBooking.checkInDay;
+      i < deletedBooking.checkOutDay;
+      i++
+    ) {
       currentProperty.isBooked[i] = false;
     }
 
@@ -165,9 +181,18 @@ contract AirBlock {
     Booking memory newBooking = bookings[_bookingId];
     Property memory currentProperty = properties[newBooking.propertyId];
 
-    require(currentProperty.isActive == true, 'property with this ID is not active');
-    require(newBooking.isDeleted == false, 'booking with this ID is already deleted');
-    require(newBooking.renter == msg.sender, 'not the person who originally made the booking');
+    require(
+      currentProperty.isActive == true,
+      'property with this ID is not active'
+    );
+    require(
+      newBooking.isDeleted == false,
+      'booking with this ID is already deleted'
+    );
+    require(
+      newBooking.renter == msg.sender,
+      'not the person who originally made the booking'
+    );
 
     for (uint256 i = newCheckInDay; i < newCheckOutDay; i++) {
       if (currentProperty.isBooked[i] == true) {
@@ -183,12 +208,13 @@ contract AirBlock {
       currentProperty.isBooked[i] = true;
     }
 
-    uint256 totalPrice = currentProperty.price * (newCheckOutDay - newCheckInDay);
-    
+    uint256 totalPrice = currentProperty.price *
+      (newCheckOutDay - newCheckInDay);
+
     newBooking.totalPrice = totalPrice;
     newBooking.checkInDate = newCheckInDate;
     newBooking.checkOutDate = newCheckOutDate;
-    
+
     bookings[_bookingId] = newBooking;
 
     emit ModifyBooking(newBooking.bookingId);
@@ -197,11 +223,21 @@ contract AirBlock {
   function confirmBooking(uint256 _bookingId) public payable {
     Booking memory currentBooking = bookings[_bookingId];
     Property memory currentProperty = properties[currentBooking.propertyId];
-    require(currentBooking.isDeleted == false, 'booking with this ID is already deleted');
-    require(currentProperty.isActive == true, 'property with this ID is not active');
-    require(currentBooking.renter == msg.sender, 'not the person who originally made the booking');
+    require(
+      currentBooking.isDeleted == false,
+      'booking with this ID is already deleted'
+    );
+    require(
+      currentProperty.isActive == true,
+      'property with this ID is not active'
+    );
+    require(
+      currentBooking.renter == msg.sender,
+      'not the person who originally made the booking'
+    );
 
-    uint256 totalPrice = currentProperty.price * (currentBooking.checkOutDay - currentBooking.checkInDay);
+    uint256 totalPrice = currentProperty.price *
+      (currentBooking.checkOutDay - currentBooking.checkInDay);
 
     require(msg.value >= totalPrice, 'Sent insufficient funds');
 

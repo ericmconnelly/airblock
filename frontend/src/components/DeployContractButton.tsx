@@ -25,7 +25,6 @@ export const DeployContractButton = () => {
   }, [library]);
 
   const handleDeployContract = (event: React.MouseEvent<HTMLButtonElement>) => {
-    console.log('handleDeployContract', airBlockContract, signer);
     event.preventDefault();
 
     // only deploy the Greeter contract one time, when a signer is defined

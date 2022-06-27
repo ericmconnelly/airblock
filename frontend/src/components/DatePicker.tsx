@@ -130,8 +130,6 @@ export const DatePicker = ({ labelText, onSelect }: any) => {
     getDayCount(datepickerHeaderDate);
   }, [datepickerHeaderDate]);
 
-  console.log('type ', type);
-
   return (
     <div className="mt-4">
       <div className="">
