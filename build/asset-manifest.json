@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.css": "/static/css/main.7e806d47.css",
+    "main.js": "/static/js/main.e2c4104c.js",
+    "static/media/AirBlock-1.jpg": "/static/media/AirBlock-1.100cbdbd2f27e6186548.jpg",
+    "index.html": "/index.html",
+    "main.7e806d47.css.map": "/static/css/main.7e806d47.css.map",
+    "main.e2c4104c.js.map": "/static/js/main.e2c4104c.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.7e806d47.css",
+    "static/js/main.e2c4104c.js"
+  ]
+}
