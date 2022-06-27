@@ -40,7 +40,7 @@
     "typescript": "^4.5.2"
   },
   "scripts": {
-    "lint": "",
+    "build": "yarn hardhat compile && cd frontend && yarn build",
     "lint:fix": "",
     "test": "echo \"Error: no test specified\" && exit 1"
   }
