@@ -29,7 +29,7 @@ export const PropertyList = ({ properties }: PropertyListProps) => {
     <div className="mt-4">
       <ul className="flex flex-col gap-4 max-w-screen-xl object-contain">
         {properties.map((property) => (
-          <li className="" key={property.id.toNumber()}>
+          <li className="mb-16" key={property.id.toNumber()}>
             <h5 className="font-medium leading-tight text-xl mt-2 mb-1">
               {property.name}
             </h5>
@@ -49,7 +49,7 @@ export const PropertyList = ({ properties }: PropertyListProps) => {
             <h4 className="font-medium leading-tight text-xl mt-4 mb-1">
                 Descriptions
             </h4>
-            <p className="font-xs leading-tight text-base mt-4 mb-8">
+            <p className="font-xs leading-tight text-base mt-4 mb-4">
               {property.description}
             </p>
             <h4 className="font-medium leading-tight text-xl mt-4 mb-1">
