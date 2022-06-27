@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useWeb3React } from '@web3-react/core';
-import { Contract, ethers, Signer } from 'ethers';
+import { ethers, Signer } from 'ethers';
 import { ListingModal } from './ListingModal';
 import { Provider } from '../utils/provider';
 import { PropertyList } from './PropertyList';
@@ -14,12 +14,10 @@ export const Listings = () => {
   const [signer, setSigner] = useState<Signer>();
   const [isOpen, setIsOpen] = useState(false);
   const [listedProperties, setListedProperties] = useState<Property[]>([]);
-  const [airBlockContractAddr, setAirBlockContractAddr] = useState<string>(
-    contractAddress
-  );
-  const [airBlockContract, setAirBlockContract] = useState<Contract>(
-    new ethers.Contract(airBlockContractAddr, AirBlockArtifact.abi, signer)
-  );
+
+  const airBlockContract = useMemo(() => {
+    return new ethers.Contract(contractAddress, AirBlockArtifact.abi, signer);
+  }, [signer]);
 
   useEffect((): void => {
     if (!library) {
@@ -86,7 +84,6 @@ export const Listings = () => {
         onOpen={() => setIsOpen(true)}
         onClose={() => setIsOpen(false)}
         isOpen={isOpen}
-        airBlockContractAddr={airBlockContractAddr}
       />
       <PropertyList properties={listedProperties} />
     </div>

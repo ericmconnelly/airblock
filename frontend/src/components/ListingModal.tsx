@@ -1,17 +1,17 @@
 import React, { Fragment, useState, useEffect, useMemo } from 'react';
 import { useWeb3React } from '@web3-react/core';
-import { BigNumber, Contract, ethers, Signer } from 'ethers';
+import { BigNumber, ethers, Signer } from 'ethers';
 import { CurrencyInput } from './CurrencyInput';
 import { Dialog, Transition } from '@headlessui/react';
 import { Provider } from '../utils/provider';
 import { Input } from './Input';
 import AirBlockArtifact from '../artifacts/contracts/AirBlock.sol/AirBlock.json';
+import { contractAddress } from './address';
 
 type ListingModalProps = {
   onOpen: () => void;
   onClose: () => void;
   isOpen: boolean;
-  airBlockContractAddr: string;
 };
 
 const MAX_IMAGES = 5;
@@ -23,25 +23,24 @@ for (let i = 0; i < MAX_IMAGES; i++) {
 }
 
 export const ListingModal = ({
-  onOpen,
   onClose,
-  isOpen,
-  airBlockContractAddr
+  isOpen
 }: ListingModalProps) => {
   const context = useWeb3React<Provider>();
-  const { library, active } = context;
+  const { library } = context;
   const [signer, setSigner] = useState<Signer>();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
   const [currency, setCurrency] = useState('ETH');
   const [location, setLocation] = useState('');
-  const [airBlockContract, setAirBlockContract] = useState<Contract>(
-    new ethers.Contract(airBlockContractAddr, AirBlockArtifact.abi, signer)
-  );
-  const [listedProperties, setListedProperties] = useState([]);
+  // const [listedProperties, setListedProperties] = useState([]);
   const [creating, setCreating] = useState(false);
   const [images, setImages] = useState(images_hash);
+
+  const airBlockContract = useMemo(() => {
+    return new ethers.Contract(contractAddress, AirBlockArtifact.abi, signer);
+  }, [signer]);
 
   useEffect((): void => {
     if (!library) {
@@ -63,7 +62,7 @@ export const ListingModal = ({
   };
 
   const handlePriceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPrice(event.target.value.replace(/[^0-9\.]/g, ''));
+    setPrice(event.target.value.replace(/[^0-9.]/g, ''));
   };
 
   const handleLocationChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -109,14 +108,14 @@ export const ListingModal = ({
     onClose();
   };
 
-  useEffect(() => {
-    if (!signer || !airBlockContract) return;
+  // useEffect(() => {
+  //   if (!signer || !airBlockContract) return;
 
-    airBlockContract
-      .connect(signer)
-      .getPropertiesForOwner()
-      .then(setListedProperties);
-  }, [airBlockContract, signer]);
+  //   airBlockContract
+  //     .connect(signer)
+  //     .getPropertiesForOwner()
+  //     .then(setListedProperties);
+  // }, [airBlockContract, signer]);
 
   return (
     <Transition appear show={isOpen} as={Fragment}>

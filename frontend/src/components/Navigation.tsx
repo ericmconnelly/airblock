@@ -1,6 +1,6 @@
-import React, { Fragment, useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { useWeb3React } from '@web3-react/core';
-import { Disclosure, Menu, Transition } from '@headlessui/react';
+import { Disclosure } from '@headlessui/react';
 import { MenuIcon, XIcon } from '@heroicons/react/outline';
 import { Provider } from '../utils/provider';
 import { Link } from 'react-router-dom';
@@ -22,11 +22,11 @@ function classNames(...classes: any) {
 export const Navigation = () => {
   const [currentTab, setCurrentTab] = useState('Home');
   const context = useWeb3React<Provider>();
-  const { library, active } = context;
+  const { active } = context;
 
   return (
     <Disclosure as="nav" className="">
-      {({ open }) => (
+      {({ open }: any) => (
         <>
           <div className="max-w-7xl px-2 sm:px-6 lg:px-8">
             <div className="relative flex items-center justify-between h-16">
@@ -56,7 +56,7 @@ export const Navigation = () => {
                           key={item.name}
                           onClick={() => setCurrentTab(item.name)}
                           className={classNames(
-                            window.location.pathname === item.to
+                            item.name === currentTab
                               ? 'bg-[#F55C40] text-white'
                               : 'text-gray-900 hover:bg-[#F55C40] hover:text-white',
                             'px-3 py-2 rounded-md text-sm font-medium'

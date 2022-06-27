@@ -1,12 +1,11 @@
-import React, { Fragment, useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useWeb3React } from '@web3-react/core';
-import { Contract, ethers, Signer } from 'ethers';
+import { ethers, Signer } from 'ethers';
 import { Provider } from '../utils/provider';
 import AirBlockArtifact from '../artifacts/contracts/AirBlock.sol/AirBlock.json';
 
 import type { Property } from '../types';
 import { DatePicker } from './DatePicker';
-import { startOfDay } from 'date-fns';
 import { contractAddress } from './address';
 
 type PropertyListProps = {
@@ -38,15 +37,14 @@ export const PropertyListReserve = ({ properties }: PropertyListProps) => {
   );
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-  const [airBlockContractAddr, setAirBlockContractAddr] =
-    useState<string>(contractAddress);
   const context = useWeb3React<Provider>();
-  const { library, active } = context;
+  const { library } = context;
   const [signer, setSigner] = useState<Signer>();
   const [signerAddr, setSignerAddr] = useState<string | null>(null);
-  const [airBlockContract, setAirBlockContract] = useState<Contract>(
-    new ethers.Contract(airBlockContractAddr, AirBlockArtifact.abi, signer)
-  );
+
+  const airBlockContract = useMemo(() => {
+    return new ethers.Contract(contractAddress, AirBlockArtifact.abi, signer);
+  }, [signer]);
 
   useEffect((): void => {
     if (!library) {

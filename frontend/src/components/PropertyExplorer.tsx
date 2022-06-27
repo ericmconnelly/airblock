@@ -1,6 +1,6 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useWeb3React } from '@web3-react/core';
-import { Contract, ethers, Signer } from 'ethers';
+import { ethers, Signer } from 'ethers';
 import { Provider } from '../utils/provider';
 import { PropertyListReserve } from './PropertyListReserve';
 import AirBlockArtifact from '../artifacts/contracts/AirBlock.sol/AirBlock.json';
@@ -9,15 +9,13 @@ import { contractAddress } from "./address";
 
 export const PropertyExplorer = () => {
   const context = useWeb3React<Provider>();
-  const { library, active } = context;
+  const { library } = context;
   const [signer, setSigner] = useState<Signer>();
   const [properties, setProperties] = useState<Property[]>([]);
-  const [airBlockContractAddr, setAirBlockContractAddr] = useState<string>(
-    contractAddress
-  );
-  const [airBlockContract, setAirBlockContract] = useState<Contract>(
-    new ethers.Contract(airBlockContractAddr, AirBlockArtifact.abi, signer)
-  );
+
+  const airBlockContract = useMemo(() => {
+    return new ethers.Contract(contractAddress, AirBlockArtifact.abi, signer);
+  }, [signer]);
 
   useEffect((): void => {
     if (!library) {

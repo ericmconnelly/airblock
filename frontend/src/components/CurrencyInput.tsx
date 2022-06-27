@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
 
-const fixedInputClass =
-  'rounded-md appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm';
-
 const CURRENCY: any = {
   ETH: 'Ξ',
   BTC: '₿',
@@ -20,10 +17,10 @@ export const CurrencyInput = ({
   labelFor,
   id,
   name,
-  type,
-  isRequired = false,
-  placeholder,
-  customClass
+  // type,
+  // isRequired = false,
+  // placeholder,
+  // customClass
 }: any) => {
   const [currency, setCurrency] = useState(_currency);
 
@@ -32,7 +29,6 @@ export const CurrencyInput = ({
   ) => {
     setCurrency(event.target.value);
     onCurrencyChange(event.target.value);
-    console.log('handleChangeCurrency ', event.target.value);
   };
 
   return (

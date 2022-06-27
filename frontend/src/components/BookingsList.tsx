@@ -1,9 +1,5 @@
-import React, { useState, useMemo, useEffect, ReactElement } from 'react';
-import { useWeb3React } from '@web3-react/core';
-import { Contract, ethers, Signer, Transaction } from 'ethers';
-import { Provider } from '../utils/provider';
-import AirBlockArtifact from '../artifacts/contracts/AirBlock.sol/AirBlock.json';
-import { contractAddress } from './address';
+import React, { useState } from 'react';
+import { ethers } from 'ethers';
 import type { Booking, Property } from '../types';
 
 type BookingsListProps = {
@@ -29,14 +25,6 @@ export const BookingsList = ({
   onClickConfirm,
   onClickCancel
 }: BookingsListProps) => {
-  const context = useWeb3React<Provider>();
-  const { library, active } = context;
-  const [signer, setSigner] = useState<Signer>();
-  const [airBlockContractAddr, setAirBlockContractAddr] =
-    useState<string>(contractAddress);
-  const [airBlockContract, setAirBlockContract] = useState<Contract>(
-    new ethers.Contract(airBlockContractAddr, AirBlockArtifact.abi, signer)
-  );
   const [modifyings, setModifyings] = useState<{ [key: string]: boolean }>({});
   const [cancelings, setCancelings] = useState<{ [key: string]: boolean }>({});
   const [confirmings, setConfirmings] = useState<{ [key: string]: boolean }>(

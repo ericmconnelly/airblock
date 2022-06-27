@@ -7,11 +7,9 @@ import AirBlockArtifact from '../artifacts/contracts/AirBlock.sol/AirBlock.json'
 
 export const DeployContractButton = () => {
   const context = useWeb3React<Provider>();
-  const { library, active } = context;
+  const { library } = context;
   const [signer, setSigner] = useState<Signer>();
   const [deploying, setDeploying] = useState(false);
-  const [airBlockContractAddr, setAirBlockContractAddr] = useState<string>();
-  // '0xF765822f3843a1d2c093B461318466e9fb60D2bA'
   const [airBlockContract, setAirBlockContract] = useState<Contract>();
   // new ethers.Contract(airBlockContractAddr, AirBlockArtifact.abi, signer)
 
@@ -50,7 +48,6 @@ export const DeployContractButton = () => {
 
         console.log(`AirBlock deployed to: ${newAirBlockContract.address}`);
 
-        setAirBlockContractAddr(newAirBlockContract.address);
         setDeploying(false);
       } catch (error: any) {
         console.error(

@@ -1,6 +1,6 @@
 import { LinkIcon } from '@heroicons/react/solid';
-import { MouseEvent, ReactElement, useState, Fragment } from 'react';
-import { UnsupportedChainIdError, useWeb3React } from '@web3-react/core';
+import { MouseEvent } from 'react';
+import { useWeb3React } from '@web3-react/core';
 import { AbstractConnector } from '@web3-react/abstract-connector';
 import { Provider } from '../utils/provider';
 import { injected } from '../utils/connectors';
@@ -13,16 +13,13 @@ type ActivateFunction = (
 
 export const ConnectWalletButton = () => {
   const context = useWeb3React<Provider>();
-  const { activate, active } = context;
-  const [activating, setActivating] = useState<boolean>(false);
+  const { activate } = context;
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
 
     async function _activate(activate: ActivateFunction): Promise<void> {
-      setActivating(true);
       await activate(injected);
-      setActivating(false);
     }
 
     _activate(activate);

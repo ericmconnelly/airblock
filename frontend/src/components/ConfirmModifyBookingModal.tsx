@@ -1,10 +1,8 @@
 import React, { Fragment, useState, useEffect, useMemo } from 'react';
 import { useWeb3React } from '@web3-react/core';
-import { BigNumber, Contract, ethers, Signer } from 'ethers';
-import { CurrencyInput } from './CurrencyInput';
+import { ethers, Signer } from 'ethers';
 import { Dialog, Transition } from '@headlessui/react';
 import { Provider } from '../utils/provider';
-import { Input } from './Input';
 import { DatePicker } from './DatePicker';
 import AirBlockArtifact from '../artifacts/contracts/AirBlock.sol/AirBlock.json';
 import { Booking, Property } from '../types';
@@ -34,17 +32,17 @@ export const ConfirmModifyBookingModal = ({
   onClose,
   isOpen,
   booking,
-  property
 }: ConfirmModifyBookingModalProps) => {
   const context = useWeb3React<Provider>();
-  const { library, active } = context;
+  const { library } = context;
   const [signer, setSigner] = useState<Signer>();
-  const [airBlockContract, setAirBlockContract] = useState<Contract>(
-    new ethers.Contract(contractAddress, AirBlockArtifact.abi, signer)
-  );
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [modifying, setModifying] = useState(false);
+
+  const airBlockContract = useMemo(() => {
+    return new ethers.Contract(contractAddress, AirBlockArtifact.abi, signer);
+  }, [signer]);
 
   useEffect((): void => {
     if (!library) {

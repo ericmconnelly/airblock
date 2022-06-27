@@ -1,11 +1,11 @@
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { Fragment, useState, useEffect, useMemo } from 'react';
 import { useWeb3React } from '@web3-react/core';
-import { Contract, ethers, Signer } from 'ethers';
+import { ethers, Signer } from 'ethers';
 import { Dialog, Transition } from '@headlessui/react';
 import { Provider } from '../utils/provider';
 import AirBlockArtifact from '../artifacts/contracts/AirBlock.sol/AirBlock.json';
 import { contractAddress } from './address';
-import { Booking, Property } from "../types";
+import { Booking, Property } from '../types';
 
 type ConfirmCancelBookingModalProps = {
   onOpen: () => void;
@@ -16,19 +16,19 @@ type ConfirmCancelBookingModalProps = {
 };
 
 export const ConfirmCancelBookingModal = ({
-  onOpen,
   onClose,
   isOpen,
   booking,
-  property,
+  property
 }: ConfirmCancelBookingModalProps) => {
   const context = useWeb3React<Provider>();
-  const { library, active } = context;
+  const { library } = context;
   const [signer, setSigner] = useState<Signer>();
-  const [airBlockContract, setAirBlockContract] = useState<Contract>(
-    new ethers.Contract(contractAddress, AirBlockArtifact.abi, signer)
-  );
   const [cancelling, setCancelling] = useState(false);
+
+  const airBlockContract = useMemo(() => {
+    return new ethers.Contract(contractAddress, AirBlockArtifact.abi, signer);
+  }, [signer]);
 
   useEffect((): void => {
     if (!library) {
@@ -46,7 +46,9 @@ export const ConfirmCancelBookingModal = ({
 
     setCancelling(true);
 
-    const tx = await airBlockContract.connect(signer).deleteBooking(booking.bookingId);
+    const tx = await airBlockContract
+      .connect(signer)
+      .deleteBooking(booking.bookingId);
     await tx.wait();
 
     setCancelling(false);
@@ -55,7 +57,6 @@ export const ConfirmCancelBookingModal = ({
 
   useEffect(() => {
     if (!signer || !airBlockContract) return;
-
   }, [airBlockContract, signer]);
 
   return (
@@ -92,7 +93,10 @@ export const ConfirmCancelBookingModal = ({
                   Confirm cancellation
                 </Dialog.Title>
                 <p className="mt-8 mb-8">
-                    Are you sure you want to cancel booking in {property && property.location} from {booking && new Date(booking.checkInDate).toDateString()} to {booking && new Date(booking.checkOutDate).toDateString()}?
+                  Are you sure you want to cancel booking in{' '}
+                  {property && property.location} from{' '}
+                  {booking && new Date(booking.checkInDate).toDateString()} to{' '}
+                  {booking && new Date(booking.checkOutDate).toDateString()}?
                 </p>
                 <div className="mt-4 flex gap-4">
                   <button
