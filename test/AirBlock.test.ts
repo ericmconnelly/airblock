@@ -269,38 +269,6 @@ describe('AirBlock', function (): void {
       assert(ex !== undefined);
     });
 
-    it('should revert if trying to book non-available property', async () => {
-      const propertyId = 0;
-      let ex: any;
-      let tx;
-
-      tx = await airblock.rentProperty(
-        propertyId,
-        '01/05/2022',
-        '01/07/2022',
-        5,
-        7
-      );
-
-      tx.wait();
-
-      try {
-        tx = await airblock.rentProperty(
-          propertyId,
-          '01/05/2022',
-          '01/07/2022',
-          5,
-          7
-        );
-
-        await tx.wait();
-      } catch (_ex) {
-        ex = _ex;
-      }
-
-      assert(ex !== undefined);
-    });
-
     it('should revert if trying to book property with insufficient value', async () => {
       const propertyId = 0;
       let ex: any;
