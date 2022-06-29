@@ -5,6 +5,7 @@ import { CurrencyInput } from './CurrencyInput';
 import { Dialog, Transition } from '@headlessui/react';
 import { Provider } from '../utils/provider';
 import { Input } from './Input';
+import { TextArea } from './TextArea';
 import AirBlockArtifact from '../artifacts/contracts/AirBlock.sol/AirBlock.json';
 import { contractAddress } from './address';
 
@@ -108,15 +109,6 @@ export const ListingModal = ({
     onClose();
   };
 
-  // useEffect(() => {
-  //   if (!signer || !airBlockContract) return;
-
-  //   airBlockContract
-  //     .connect(signer)
-  //     .getPropertiesForOwner()
-  //     .then(setListedProperties);
-  // }, [airBlockContract, signer]);
-
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={onClose}>
@@ -160,7 +152,7 @@ export const ListingModal = ({
                     handleChange={handleNameChange}
                     isRequired
                   />
-                  <Input
+                  <TextArea
                     value={description}
                     labelText="Description"
                     labelFor="description"

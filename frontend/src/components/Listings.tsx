@@ -35,6 +35,7 @@ export const Listings = () => {
       airBlockContract
       .connect(signer)
       .getPropertiesForOwner()
+      .then((properties: Property[]) => properties.filter((p: Property) => p.name))
       .then(setListedProperties);
     } catch (err) {
       // console.log(err);
@@ -44,6 +45,7 @@ export const Listings = () => {
       airBlockContract
         .connect(signer)
         .getPropertiesForOwner()
+        .then((properties: Property[]) => properties.filter((p: Property) => p.name))
         .then(setListedProperties);
     });
   }, [airBlockContract, signer]);

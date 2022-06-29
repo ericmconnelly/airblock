@@ -20,7 +20,7 @@ function classNames(...classes: any) {
 }
 
 export const Navigation = () => {
-  const [currentTab, setCurrentTab] = useState('Home');
+  const [currentTab, setCurrentTab] = useState(window.location.pathname);
   const context = useWeb3React<Provider>();
   const { active } = context;
 
@@ -56,7 +56,7 @@ export const Navigation = () => {
                           key={item.name}
                           onClick={() => setCurrentTab(item.name)}
                           className={classNames(
-                            item.name === currentTab
+                            item.to === currentTab
                               ? 'bg-[#F55C40] text-white'
                               : 'text-gray-900 hover:bg-[#F55C40] hover:text-white',
                             'px-3 py-2 rounded-md text-sm font-medium'
