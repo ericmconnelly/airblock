@@ -135,13 +135,7 @@ export const BookingsList = ({
                   ))}
               </div>
             </div>
-            <h4 className="font-medium leading-tight text-xl mt-4 mb-1">
-              Descriptions
-            </h4>
-            <p className="font-xs leading-tight text-base mt-4 mb-8">
-              {properties[booking.propertyId.toNumber()].description}
-            </p>
-            <div>
+            <div className="font-medium mt-4">
               <p>
                 <span className="font-medium mr-2">Check-in Date:</span>
                 {new Date(booking.checkInDate).toDateString()}

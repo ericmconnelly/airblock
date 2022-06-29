@@ -116,22 +116,17 @@ export const PropertyListReserve = ({ properties }: PropertyListProps) => {
 
   return (
     <div className="mt-4">
-      <ul className="flex flex-col gap-4 object-contain">
+      <ul className="flex flex-col gap-4 max-w-screen-xl object-contain">
         {filteredProperties.map((property) => (
           <li className="mb-12" key={property.id.toNumber()}>
             <h5 className="font-medium leading-tight text-xl mt-2 mb-1">
               {property.name}
             </h5>
             <p className="text-sm mb-4 underline">{property.location}</p>
-            <div className="flex flex-row gap-4">
+            <div className="flex flex-row gap-4 max-h-96">
               <div className="flex-1">
                 {property.images.slice(0, 1).map((image) => (
-                  <img
-                    src={image}
-                    key={image}
-                    alt={property.description}
-                    className=""
-                  />
+                  <img src={image} key={image} alt={property.description} className="h-[102%] w-full"/>
                 ))}
               </div>
               <div className="flex-1 flex flex-wrap gap-2 max-h-full">
