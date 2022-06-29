@@ -40,7 +40,7 @@ export const Reservations = () => {
 
     const connectedContract = airBlockContract.connect(signer);
 
-    connectedContract.getBookingsForTenant().then(setBookings);
+    connectedContract.getBookingsForTenant().then((bookings: Booking[]) => bookings.filter(b => b.checkInDate)).then(setBookings);
     connectedContract.getAllProperties().then(setProperties);
 
     connectedContract.on('NewProperty', async () => {

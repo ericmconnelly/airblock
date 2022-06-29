@@ -54,7 +54,7 @@ export const Navigation = () => {
                       <Link to={item.to} key={item.key}>
                         <span
                           key={item.name}
-                          onClick={() => setCurrentTab(item.name)}
+                          onClick={() => setCurrentTab(item.to)}
                           className={classNames(
                             item.to === currentTab
                               ? 'bg-[#F55C40] text-white'
