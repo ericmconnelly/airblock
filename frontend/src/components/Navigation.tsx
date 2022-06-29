@@ -5,8 +5,8 @@ import { MenuIcon, XIcon } from '@heroicons/react/outline';
 import { Provider } from '../utils/provider';
 import { Link } from 'react-router-dom';
 import logo from '../logos/AirBlock-1.jpg';
-import { DeployContractButton } from "./DeployContractButton";
-import { ConnectWalletButton } from "./ConnectWalletButton";
+import { DeployContractButton } from './DeployContractButton';
+import { ConnectWalletButton } from './ConnectWalletButton';
 
 const navigation = [
   { name: 'Home', current: true, to: '/', key: 0 },
@@ -42,11 +42,13 @@ export const Navigation = () => {
               </div>
               <div className="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
                 <div className="flex-shrink-0 flex items-center">
-                  <img
-                    className="hidden lg:block w-48"
-                    src={logo}
-                    alt="AirBlock"
-                  />
+                  <Link to={'/'}>
+                    <img
+                      className="hidden lg:block w-48"
+                      src={logo}
+                      alt="AirBlock"
+                    />
+                  </Link>
                 </div>
                 <div className="hidden sm:block lg:px-8 lg:py-8">
                   <div className="flex space-x-4 items-center">
@@ -66,7 +68,11 @@ export const Navigation = () => {
                         </span>
                       </Link>
                     ))}
-                    {active ? <DeployContractButton /> : <ConnectWalletButton />}
+                    {active ? (
+                      <DeployContractButton />
+                    ) : (
+                      <ConnectWalletButton />
+                    )}
                   </div>
                 </div>
               </div>
