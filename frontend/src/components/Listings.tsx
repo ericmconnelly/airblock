@@ -54,7 +54,7 @@ export const Listings = () => {
     return active ? (
       <button
         type="button"
-        className="px-6 pt-2.5 pb-2 bg-[#F55C40] text-white font-medium text-xs leading-normal uppercase rounded shadow-md hover:bg-[#f54040] hover:shadow-lg focus:bg-[#f54040] focus:shadow-lg focus:outline-none focus:ring-0 active:bg-[#f54040] active:shadow-lg transition duration-150 ease-in-out flex align-center"
+        className="px-3 pt-1 pb-1 bg-[#F55C40] text-white font-medium text-xs leading-normal uppercase rounded shadow-md hover:bg-[#f54040] hover:shadow-lg focus:bg-[#f54040] focus:shadow-lg focus:outline-none focus:ring-0 active:bg-[#f54040] active:shadow-lg transition duration-150 ease-in-out flex align-center"
         onClick={() => setIsOpen(true)}
       >
         <svg
