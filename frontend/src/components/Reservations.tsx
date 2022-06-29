@@ -104,7 +104,7 @@ export const Reservations = () => {
   };
 
   return (
-    <div className="max-w-7xl px-2 sm:px-6 lg:px-8">
+    <div className="px-2 sm:px-6 lg:px-8">
       {bookings.length === 0 ? <div>No reservations</div> : null}
       <BookingsList
         bookings={bookings}

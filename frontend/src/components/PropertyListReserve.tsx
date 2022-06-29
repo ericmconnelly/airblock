@@ -116,7 +116,7 @@ export const PropertyListReserve = ({ properties }: PropertyListProps) => {
 
   return (
     <div className="mt-4">
-      <ul className="flex flex-col gap-4 max-w-screen-xl object-contain">
+      <ul className="flex flex-col gap-4 object-contain">
         {filteredProperties.map((property) => (
           <li className="mb-12" key={property.id.toNumber()}>
             <h5 className="font-medium leading-tight text-xl mt-2 mb-1">

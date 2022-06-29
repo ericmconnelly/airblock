@@ -75,7 +75,7 @@ export const Listings = () => {
   }, [setIsOpen, active]);
 
   return (
-    <div className="max-w-7xl px-2 sm:px-6 lg:px-8">
+    <div className="max-w-screen-xl px-2 sm:px-6 lg:px-8">
       <div className="flex gap-4 items-center">
         <h4 className="text-2xl font-bold leading-7 text-gray-900 sm:text-1xl sm:truncate">
           Listings
